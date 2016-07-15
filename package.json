@@ -1,0 +1,22 @@
+{
+  "name": "consul-restify",
+  "version": "0.0.1",
+  "description": "A factory library for generating Restify clients based on Consul service discovery",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/docketbook/consul-restify.git"
+  },
+  "dependencies": {
+    "assert-plus":"1.0.0",
+    "restify":"4.0.4",
+    "consul":"0.25.0",
+    "bluebird":"~2.10.2"
+  },
+  "author": "Dave Finster <df@docketbook.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/docketbook/consul-restify/issues"
+  },
+  "homepage": "https://github.com/docketbook/consul-restify#readme"
+}
