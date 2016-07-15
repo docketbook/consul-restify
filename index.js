@@ -80,17 +80,6 @@ function consulLookup(params) {
 	})
 }
 
-function singleEndpointConsulLookup(params) {
-	return consulLookup(params)
-	.then((endpoints) => {
-		if (endpoints.length === 1) {
-			return endpoints[0];
-		} else {
-			return endpoints[Math.floor(Math.random()*endpoints.length)];
-		}
-	})
-}
-
 function optionsForClient(endpoint, opts) {
 	return Promise.try(() => {
 		let resolvedOptions = {
@@ -134,12 +123,21 @@ function endpointsForService(service, opts) {
 	})
 }
 
+function singleEndpointForService(service, opts) {
+	return this.endpointsForService(service, opts)
+	.then((endpoints) => {
+		if (endpoints.length === 1) {
+			return endpoints[0];
+		} else {
+			return endpoints[Math.floor(Math.random()*endpoints.length)];
+		}
+	})
+}
+
 function clientForService(service, opts) {
 	return Promise.try(() => {
 		assert.string(service, 'service');
-		return this.parametersForService(service, opts);
-	}).then((params) => {
-		return this.singleEndpointConsulLookup(params);
+		return this.singleEndpointForService(service, opts);
 	}).then((endpoint) => {
 		return this.optionsForClient(endpoint, opts);
 	}).then((options) => {
@@ -173,8 +171,8 @@ exports.buildProvider = function(opts) {
 		parametersForService: parametersForService,
 		consulLookup: consulLookup,
 		optionsForClient: optionsForClient,
-		singleEndpointConsulLookup: singleEndpointConsulLookup,
-		endpointsForService: endpointsForService
+		endpointsForService: endpointsForService,
+		singleEndpointForService: singleEndpointForService
 	}, opts);
 	return obj;
 }
