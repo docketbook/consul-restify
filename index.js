@@ -148,7 +148,13 @@ function clientForService(service, opts) {
 		if ((opts) && (opts.factory)) {
 			factoryMethod = opts.factory;
 		}
-		return factoryMethod(options);
+		if (this.promisify) {
+			return Promise.promisifyAll(factoryMethod(options), {
+				multiArgs: true
+			});
+		} else {
+			return factoryMethod(options);
+		}
 	})
 }
 
@@ -166,6 +172,7 @@ exports.ServiceNotFoundError = ServiceNotFound;
 
 exports.buildProvider = function(opts) {
 	let obj = Object.assign({
+		promisify: false,
 		clientForServices: clientForServices,
 		clientForService: clientForService,
 		parametersForService: parametersForService,
