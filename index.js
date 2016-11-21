@@ -124,6 +124,7 @@ function endpointsForService(service, opts) {
 }
 
 function singleEndpointForService(service, opts) {
+	let startTime = Date.now()
 	return Promise.try(() => {
 		if (this.log) {
 			this.log.debug(`Fetching Single Endpoint for ${service}`);
@@ -145,11 +146,17 @@ function singleEndpointForService(service, opts) {
 			return this.endpointsForService(service, opts)
 		}
 	}).then((endpoints) => {
+		let endpoint = null;
 		if (endpoints.length === 1) {
-			return endpoints[0];
+			endpoint = endpoints[0];
 		} else {
-			return endpoints[Math.floor(Math.random()*endpoints.length)];
+			endpoint = endpoints[Math.floor(Math.random()*endpoints.length)];
 		}
+		let endTime = Date.now();
+		if (this.log) {
+			this.log.debug(`Resolved Endpoint for ${service} in ${endTime - startTime}ms`);
+		}
+		return endpoint;
 	})
 }
 
