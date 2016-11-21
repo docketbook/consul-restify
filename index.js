@@ -124,8 +124,27 @@ function endpointsForService(service, opts) {
 }
 
 function singleEndpointForService(service, opts) {
-	return this.endpointsForService(service, opts)
-	.then((endpoints) => {
+	return Promise.try(() => {
+		if (this.log) {
+			this.log.debug(`Fetching Single Endpoint for ${service}`);
+		}
+		if (this.useDns) {
+			let singleDnsEndpoint = {
+				address: `${service}.${this.dnsSuffix}`,
+				port: this.dnsDefaultPort,
+				fullAddress: `${service}.${this.dnsSuffix}:${this.dnsDefaultPort}`,
+			}
+			if (this.log) {
+				this.log.debug({endpoint: singleDnsEndpoint}, `Constructed DNS Endpoint`);
+			}
+			return [singleDnsEndpoint];
+		} else {
+			if (this.log) {
+				this.log.debug("Firing Consul Query");
+			}
+			return this.endpointsForService(service, opts)
+		}
+	}).then((endpoints) => {
 		if (endpoints.length === 1) {
 			return endpoints[0];
 		} else {
@@ -172,6 +191,9 @@ exports.ServiceNotFoundError = ServiceNotFound;
 
 exports.buildProvider = function(opts) {
 	let obj = Object.assign({
+		useDns: false,
+		dnsSuffix: 'service.consul',
+		dnsDefaultPort: 8080,
 		promisify: false,
 		clientForServices: clientForServices,
 		clientForService: clientForService,
@@ -179,7 +201,8 @@ exports.buildProvider = function(opts) {
 		consulLookup: consulLookup,
 		optionsForClient: optionsForClient,
 		endpointsForService: endpointsForService,
-		singleEndpointForService: singleEndpointForService
+		singleEndpointForService: singleEndpointForService,
+		log: null
 	}, opts);
 	return obj;
 }
