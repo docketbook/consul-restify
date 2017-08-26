@@ -130,10 +130,14 @@ function singleEndpointForService(service, opts) {
 			this.log.debug(`Fetching Single Endpoint for ${service}`);
 		}
 		if (this.useDns) {
+			let base = `${service}`;
+			if (this.dnsSuffix) {
+				base = [base, this.dnsSuffix].join('.');
+			}
 			let singleDnsEndpoint = {
-				address: `${service}.${this.dnsSuffix}`,
+				address: base,
 				port: this.dnsDefaultPort,
-				fullAddress: `${service}.${this.dnsSuffix}:${this.dnsDefaultPort}`,
+				fullAddress: `${base}:${this.dnsDefaultPort}`,
 			}
 			if (this.log) {
 				this.log.debug({endpoint: singleDnsEndpoint}, `Constructed DNS Endpoint`);
